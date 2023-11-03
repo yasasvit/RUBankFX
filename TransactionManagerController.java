@@ -1,5 +1,9 @@
+/**
+* This class is made to load the accounts from bankAccounts.txt
+* @authors Pranav Gummaluri, Yasasvi Tallapaneni
+*/
 public class TransactionManagerController {
-    // ...
+    
 
     public void loadAccountsFromFile() {
         try {
