@@ -14,7 +14,7 @@ public class TransactionManagerMain extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
     
-        primaryStage.setTitle("Your Application Title");
+        primaryStage.setTitle("Transaction Manager");
     
         primaryStage.show();
     }
