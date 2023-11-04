@@ -5,21 +5,23 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class TransactionManagerMain extends Application {
-  
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("YourFXMLFileName.fxml"));
-        AnchorPane root = loader.load();
-    
-        Scene scene = new Scene(root);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TransactionManagerView.fxml"));
+        Parent root = loader.load();
+        TransactionManagerController controller = loader.getController();
+
+        primaryStage.setTitle("Bank Account Manager");
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
-    
-        primaryStage.setTitle("Transaction Manager");
-    
+
+        controller.init(); 
         primaryStage.show();
     }
+
     public static void main(String[] args) {
         launch(args);
     }
-
 }
+
