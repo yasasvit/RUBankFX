@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="your.package.name.TransactionManagerController"
+    prefHeight="400.0" prefWidth="600.0">
+
+    <!-- Main content area -->
+    <VBox layoutX="30.0" layoutY="30.0" spacing="10">
+        <Label text="Transaction Manager" styleClass="title-label" />
+        <Label text="Account Details" styleClass="section-label" />
+        <TextField fx:id="accountHolderNameField" promptText="Account Holder Name" />
+        <TextField fx:id="accountBalanceField" promptText="Account Balance" />
+        <Button text="Open Account" onAction="#handleOpenAccount" />
+        <Button text="Close Account" onAction="#handleCloseAccount" />
+
+        <Label text="Transaction" styleClass="section-label" />
+        <TextField fx:id="transactionAmountField" promptText="Transaction Amount" />
+        <Button text="Deposit" onAction="#handleDeposit" />
+        <Button text="Withdraw" onAction="#handleWithdraw" />
+
+        <Label text="Account Information" styleClass="section-label" />
+        <Label fx:id="accountInfoLabel" />
+    </VBox>
+
+</AnchorPane>
