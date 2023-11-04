@@ -2,36 +2,64 @@
 * This class is made to load the accounts from bankAccounts.txt
 * @authors Pranav Gummaluri, Yasasvi Tallapaneni
 */
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+
 public class TransactionManagerController {
+    @FXML
+    private TextField accountHolderNameField;
+
+    @FXML
+    private TextField accountBalanceField;
+
+    @FXML
+    private TextField transactionAmountField;
+
+    @FXML
+    private Label accountInfoLabel;
+
+    @FXML
+    private Button openAccountButton;
+
+    @FXML
+    private Button closeAccountButton;
+
+    @FXML
+    private Button depositButton;
+
+    @FXML
+    private Button withdrawButton;
+
     
+    @FXML
+    private void handleOpenAccount() {
+        
+        String accountHolderName = accountHolderNameField.getText();
+        double accountBalance = Double.parseDouble(accountBalanceField.getText());
 
-    public void loadAccountsFromFile() {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader("bankAccounts.txt"));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] accountData = line.split(",");
-                if (accountData.length >= 6) {
-                    // Determine the account type (e.g., "C" for Checking, "S" for Savings, "MM" for Money Market)
-                    String accountType = accountData[0];
-                    
-                    // Create the appropriate account object and populate it with data
-                    Account account = createAccountFromData(accountData);
-
-                    // Add the account to the account database (Model)
-                    accountDatabase.addAccount(account);
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            // Handle any file reading or parsing errors
-        }
+        
+        accountInfoLabel.setText("Account opened for: " + accountHolderName);
     }
 
-    private Account createAccountFromData(String[] accountData) {
-        // Implement logic to create the appropriate account object based on accountData
-        // Populate the account object with data from accountData
-        // Return the created account object
+    @FXML
+    private void handleCloseAccount() {
+        
+        accountInfoLabel.setText("Account closed.");
     }
+
+    @FXML
+    private void handleDeposit() {
+        
+        accountInfoLabel.setText("Money deposited.");
+    }
+
+    @FXML
+    private void handleWithdraw() {
+        
+        accountInfoLabel.setText("Money withdrawn.");
+    }
+
+    
 }
