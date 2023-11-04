@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="your.package.name.TransactionManagerController">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="src.TransactionManagerController">
     <center>
         <VBox alignment="TOP_CENTER" spacing="10">
             <Label text="Bank Account Manager" font="$xlarge-font" />
