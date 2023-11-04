@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="your.package.name.TransactionManagerController"
-    prefHeight="400.0" prefWidth="600.0">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="your.package.name.TransactionManagerController">
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="10">
+            <Label text="Bank Account Manager" font="$xlarge-font" />
+            
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Account Name: " />
+                <TextField fx:id="accountNameField" />
+            </HBox>
 
-    <!-- Main content area -->
-    <VBox layoutX="30.0" layoutY="30.0" spacing="10">
-        <Label text="Transaction Manager" styleClass="title-label" />
-        <Label text="Account Details" styleClass="section-label" />
-        <TextField fx:id="accountHolderNameField" promptText="Account Holder Name" />
-        <TextField fx:id="accountBalanceField" promptText="Account Balance" />
-        <Button text="Open Account" onAction="#handleOpenAccount" />
-        <Button text="Close Account" onAction="#handleCloseAccount" />
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Deposit Amount: " />
+                <TextField fx:id="depositAmountField" />
+                <Button text="Deposit" onAction="#handleDepositButton" />
+            </HBox>
 
-        <Label text="Transaction" styleClass="section-label" />
-        <TextField fx:id="transactionAmountField" promptText="Transaction Amount" />
-        <Button text="Deposit" onAction="#handleDeposit" />
-        <Button text="Withdraw" onAction="#handleWithdraw" />
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Withdraw Amount: " />
+                <TextField fx:id="withdrawAmountField" />
+                <Button text="Withdraw" onAction="#handleWithdrawButton" />
+            </HBox>
+            
+            <TextArea fx:id="accountDetailsArea" prefHeight="300" prefWidth="500" />
+        </VBox>
+    </center>
 
-        <Label text="Account Information" styleClass="section-label" />
-        <Label fx:id="accountInfoLabel" />
-    </VBox>
-
-</AnchorPane>
+    <bottom>
+        <Label text="Your bank information here" padding="10">
+            <font>
+                <Font name="System Bold" size="16" />
+            </font>
+        </Label>
+    </bottom>
+</BorderPane>
