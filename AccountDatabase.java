@@ -117,15 +117,17 @@ public class AccountDatabase {
         return true;
     }
 
-
     /**
      * Prints the account information sorted by account type and holder name
+     * @return String with the sorted output
      */
-    public void printSorted() {
+    public String printSortedFX() {
         if (numAccounts == 0) {
-            System.out.println("Account Database is empty!");
-            return;
+            return "Account Database is empty!\n";
         }
+
+        StringBuilder sortedAccountInfo = new StringBuilder();
+
         for (int i = 0; i < numAccounts - 1; i++) {
             int minIndex = i;
             for (int j = i + 1; j < numAccounts; j++) {
@@ -143,24 +145,26 @@ public class AccountDatabase {
         for (int i = 0; i < numAccounts; i++) {
             Account account = accounts[i];
             String accountType = account.getAccountType();
-            switch(accountType) {
+            switch (accountType) {
                 case "C":
-                    System.out.print("Checking::");
+                    sortedAccountInfo.append("Checking::");
                     break;
                 case "CC":
-                    System.out.print("College Checking::");
+                    sortedAccountInfo.append("College Checking::");
                     break;
                 case "MM":
-                    System.out.print("Money Market::Savings::");
+                    sortedAccountInfo.append("Money Market::Savings::");
                     break;
                 case "S":
-                    System.out.print("Savings::");
+                    sortedAccountInfo.append("Savings::");
                     break;
             }
-            System.out.println(account.toString());
+            sortedAccountInfo.append(account.toString()).append("\n");
         }
-        System.out.println();
+        sortedAccountInfo.append("\n");
+        return sortedAccountInfo.toString();
     }
+
 
     /**
     * Checks if a profile has a checking or college checking account
@@ -179,16 +183,20 @@ public class AccountDatabase {
             }
         }
         return false;
+
     }
 
     /**
-     * Prints account information along with monthly fees and interest earned for each account.
+     * Returns account information along with monthly fees and interest earned for each account.
+     * @return String representing the correct output with fees and interests
      */
-    public void printFeesAndInterests() {
+    public String printFeesAndInterestsFX() {
         if (numAccounts == 0) {
-            System.out.println("Account Database is empty!");
-            return;
+            return "Account Database is empty!\n";
         }
+
+        StringBuilder feesAndInterestsInfo = new StringBuilder();
+
         for (int i = 0; i < numAccounts - 1; i++) {
             int minIndex = i;
             for (int j = i + 1; j < numAccounts; j++) {
@@ -202,41 +210,33 @@ public class AccountDatabase {
                 accounts[minIndex] = temp;
             }
         }
+
         for (int i = 0; i < numAccounts; i++) {
             Account account = accounts[i];
             String accountType = account.getAccountType();
-            switch(accountType) {
+            switch (accountType) {
                 case "C":
-                    System.out.print("Checking::");
+                    feesAndInterestsInfo.append("Checking::");
                     break;
                 case "CC":
-                    System.out.print("College Checking::");
+                    feesAndInterestsInfo.append("College Checking::");
                     break;
                 case "MM":
-                    System.out.print("Money Market::Savings::");
+                    feesAndInterestsInfo.append("Money Market::Savings::");
                     break;
                 case "S":
-                    System.out.print("Savings::");
+                    feesAndInterestsInfo.append("Savings::");
                     break;
             }
-            System.out.print(account.toString());
+            feesAndInterestsInfo.append(account.toString());
             double interest = account.monthlyInterest();
             double fee = account.monthlyFee();
-            System.out.printf("::fee $%.2f::monthly interest $%.2f%n", fee, interest);
+            feesAndInterestsInfo.append(String.format("::fee $%.2f::monthly interest $%.2f%n", fee, interest));
         }
-        System.out.println();
+        feesAndInterestsInfo.append("\n");
+        return feesAndInterestsInfo.toString();
+    }
 
-    }
-    /**
-     * Prints the updated balances for all accounts.
-     */
-    public void printUpdatedBalances() {
-        for (int i = 0; i < numAccounts; i++) {
-            Account account = accounts[i];
-            System.out.printf("%s: Updated Balance: $%.2f%n",
-                    account.getHolder().getFullName(), account.getBalance());
-        }
-    }
     /**
      * Calculates and updates the balances of all accounts by adding monthly interest and subtracting monthly fees.
      */
