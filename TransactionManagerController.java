@@ -1,5 +1,8 @@
 package src;
-
+/**
+* This class a controller class for managing financial transactions and interactions with bank accounts. 
+* @authors Pranav Gummaluri, Yasasvi Tallapaneni
+*/
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
