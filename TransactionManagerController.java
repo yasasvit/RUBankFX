@@ -1,8 +1,5 @@
 package src;
-/**
-* This class a controller class for managing financial transactions and interactions with bank accounts. 
-* @authors Pranav Gummaluri, Yasasvi Tallapaneni
-*/
+
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,12 +13,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.event.ActionEvent;
 
+
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.time.LocalDate;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+/**
+ * The Java class that contains the event handlers for our GUI
+ * @authors Pranav Gummaluri, Yasasvi Tallapaneni
+ */
 
 
 public class TransactionManagerController {
@@ -91,16 +94,18 @@ public class TransactionManagerController {
     @FXML
     private TextArea printOutput;
 
+
     /**
-    * Initializes the instance variable
-    */
+     * Initializes the instance variable
+     */
     public void initialize() {
         this.accountDatabase = new AccountDatabase();
         disableAllOptions();
 
+
     }
     /**
-     * Disables certain radio buttons and checkboxes on the user interface 
+     * Disables certain radio buttons and checkboxes on the user interface
      */
     private void disableAllOptions() {
         nb.setDisable(true);
@@ -109,8 +114,9 @@ public class TransactionManagerController {
         loyalCustomer.setDisable(true);
     }
 
+
     /**
-     * Handles the selection of account types on the user interface. 
+     * Handles the selection of account types on the user interface.
      * @param ActionEvent object event representing user input
      */
     @FXML
@@ -122,7 +128,7 @@ public class TransactionManagerController {
                 nb.setDisable(false);
                 newark.setDisable(false);
                 camden.setDisable(false);
-            } else if (selectedAccountType.equals(savings) || selectedAccountType.equals(moneyMarket)) {
+            } else if (selectedAccountType.equals(savings)) {
                 loyalCustomer.setDisable(false);
                 nb.setSelected(false);
                 newark.setSelected(false);
@@ -146,6 +152,7 @@ public class TransactionManagerController {
         int currMonth = calendar.get(Calendar.MONTH);
         int currDay = calendar.get(Calendar.DATE);
 
+
         if (year > currYear || (year == currYear && month - 1 >= currMonth) || (year == currYear && month - 1 == currMonth && day >= currDay)) {
             return false;
         }
@@ -154,8 +161,10 @@ public class TransactionManagerController {
             return false;
         }
 
+
         return true;
     }
+
 
     /**
      * Returns the abbreviation for a given account type.
@@ -245,41 +254,55 @@ public class TransactionManagerController {
         printAllOutputs(errorStr);
     }
 
+
     /**
-    * Handles the action when the "Open" button is clicked, creating a new bank account.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Handles the action when the "Open" button is clicked, creating a new bank account.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleOpenButtonAction(ActionEvent event) {
         String firstNameText = firstName.getText().trim();
         String lastNameText = lastName.getText().trim();
         LocalDate dobDate = dob.getValue();
+
+
         String initialDepositString = initialBalance.getText().trim();
+        RadioButton selectedAccountType = (RadioButton) accountTypes.getSelectedToggle();
+        RadioButton selectedCampus = (RadioButton) campuses.getSelectedToggle();
+        try {
+            if (firstNameText.isEmpty() || lastNameText.isEmpty() || dobDate == null || selectedAccountType == null || initialDepositString.isEmpty()) {
+                String invalidInputStr = "Please fill in all required fields.\n";
+                printAllOutputs(invalidInputStr);
+                return;
+            }
+        } catch (DateTimeParseException e) {
+            printAllOutputs("Enter valid dob\n");
+            return;
+        }
+        String accountType = selectedAccountType.getId();
+        String accountTypeAbbrev = getAbbreviation(accountType);
         double initialAmount = 0;
         try {
             initialAmount = Double.parseDouble(initialDepositString);
+            if (initialAmount <= 0) {
+                printAllOutputs("Initial deposit cannot be 0 or negative.\n");
+                return;
+            }
         } catch (NumberFormatException e) {
             String invalidBalanceStr = "Please enter valid initial balance.\n";
             printAllOutputs(invalidBalanceStr);
             return;
         }
-        RadioButton selectedAccountType = (RadioButton) accountTypes.getSelectedToggle();
-        RadioButton selectedCampus = (RadioButton) campuses.getSelectedToggle();
+
+
         boolean isLoyal = loyalCustomer.isSelected();
-        if (firstNameText.isEmpty() || lastNameText.isEmpty() || dobDate == null || selectedAccountType == null || initialDepositString.isEmpty()) {
-            String invalidInputStr = "Please fill in all required fields.\n";
-            printAllOutputs(invalidInputStr);
-            return;
-        }
-        String accountType = selectedAccountType.getId();
         Date dob = new Date(dobDate.getMonthValue(), dobDate.getDayOfMonth(), dobDate.getYear());
-        if (!isValidDOB(dobDate.getMonthValue(), dobDate.getDayOfMonth(), dobDate.getYear())) {
+        if (!dob.isValid()) {
             String invalidDOBStr = "Invalid date of birth.\n";
             printAllOutputs(invalidDOBStr);
             return;
         }
         Profile profile = new Profile(firstNameText, lastNameText, dob);
-        String accountTypeAbbrev = getAbbreviation(accountType);
         if (accountTypeAbbrev.equals("CC") || accountTypeAbbrev.equals("C")) {
             if (accountDatabase.hasCheckingOrCollegeChecking(profile, accountType)) {
                 printError(firstNameText, lastNameText, dob, accountType);
@@ -289,6 +312,11 @@ public class TransactionManagerController {
         int campusCode = -1;
         if (selectedCampus != null) {
             campusCode = getCampusCode(selectedCampus.getId());
+        }
+        if (accountTypeAbbrev.equals("CC") && campusCode == -1) {
+            String invalidInputStr = "Please fill in all required fields.\n";
+            printAllOutputs(invalidInputStr);
+            return;
         }
         Account account = createNewAccount(accountTypeAbbrev, profile, initialAmount, campusCode, isLoyal);
         if (account == null) {
@@ -302,12 +330,12 @@ public class TransactionManagerController {
             printAllOutputs(errorOpenStr);
         }
     }
-    
-    
+
+
     /**
-    * Returns the campus code based on the selected campus radio button.
-    * @param String campus that represents the college campus 
-    */
+     * Returns the campus code based on the selected campus radio button.
+     * @param String campus that represents the college campus
+     */
     private int getCampusCode(String campus) {
         switch (campus.toLowerCase()) {
             case "nb":
@@ -342,9 +370,9 @@ public class TransactionManagerController {
         }
     }
     /**
-    * Handles the action when the "Close" button is clicked, closing an existing bank account.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Handles the action when the "Close" button is clicked, closing an existing bank account.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleCloseButtonAction(ActionEvent event) {
         RadioButton selectedAccountType = (RadioButton) accountTypes.getSelectedToggle();
@@ -376,10 +404,11 @@ public class TransactionManagerController {
         }
     }
 
+
     /**
-    * Clears the input fields and resets radio buttons and checkboxes.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Clears the input fields and resets radio buttons and checkboxes.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleClearButtonAction(ActionEvent event) {
         firstName.clear();
@@ -400,10 +429,11 @@ public class TransactionManagerController {
         disableAllOptions();
     }
 
+
     /**
-    * Handles the deposit action, allowing users to deposit money into their accounts.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Handles the deposit action, allowing users to deposit money into their accounts.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleDepositButton(ActionEvent event) {
         RadioButton selectedAccountType = (RadioButton) userAccountTypes.getSelectedToggle();
@@ -441,15 +471,21 @@ public class TransactionManagerController {
         if (canDeposit) {
             String depositStr =profile.toString() + " (" + accountTypeAbbrev + ") Deposit - balance updated.\n";
             printAllOutputs(depositStr);
+
+
         } else {
             String errorDepositStr =profile.toString() + " (" + accountTypeAbbrev + ") is not in the database.\n";
+            printAllOutputs(errorDepositStr);
         }
+
+
     }
 
+
     /**
-    * Handles the withdraw action, allowing users to withdraw money from their accounts.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Handles the withdraw action, allowing users to withdraw money from their accounts.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleWithdrawButton(ActionEvent event) {
         RadioButton selectedAccountType = (RadioButton) userAccountTypes.getSelectedToggle();
@@ -496,12 +532,14 @@ public class TransactionManagerController {
         }
     }
 
-    
+
+
+
 
     /**
-    * Clears input fields in the second tab of the user interface.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Clears input fields in the second tab of the user interface.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleClearButtonActionForTab2(ActionEvent event) {
         userFirstName.clear();
@@ -516,20 +554,21 @@ public class TransactionManagerController {
         printOutput.clear();
         outputTab2.clear();
 
+
     }
     /**
-    * Appends text to multiple text areas on the user interface.
-    * @param String text that represents the output message
-    */
+     * Appends text to multiple text areas on the user interface.
+     * @param String text that represents the output message
+     */
     private void printAllOutputs(String text) {
         output.appendText(text);
         outputTab2.appendText(text);
         printOutput.appendText(text);
     }
     /**
-    * Prints every account stored in the system
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Prints every account stored in the system
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void printAllAccounts(ActionEvent event) {
         String initialStr = "*Accounts sorted by account type and profile.\n";
@@ -538,9 +577,9 @@ public class TransactionManagerController {
         printAllOutputs(sortedAccountInfo);
     }
     /**
-    * Prints every account stored in the system
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Prints every account stored in the system
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void printInterestsAndFees(ActionEvent event) {
         String initialStr ="*List of accounts with fee and monthly interest.\n";
@@ -549,36 +588,41 @@ public class TransactionManagerController {
         printAllOutputs(accountInfo);
     }
 
+
     /**
-    * Calculates fees and interests, resets Money Market withdrawals, and prints the sorted account information to the UI
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Calculates fees and interests, resets Money Market withdrawals, and prints the sorted account information to the UI
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void updateAccounts(ActionEvent event) {
         String initialStr ="*List of accounts with fees and interests applied.\n";
+        printAllOutputs(initialStr);
         accountDatabase.calculateFeesAndInterests();
         accountDatabase.resetMoneyMarketWithdrawals();
         String sortedAccountInfo = accountDatabase.printSortedFX();
         printAllOutputs(sortedAccountInfo);
     }
 
+
     /**
-    * Clears the text areas in the UI 
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Clears the text areas in the UI
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void handleClearButtonForPrintTab(ActionEvent event) {
+
 
         output.clear();
         printOutput.clear();
         outputTab2.clear();
     }
 
+
     /**
-    * Checks if the provided account information is valid and can be used to create a new account
-    * Validates the account type, first name, last name, date of birth (DOB), and the initial balance.
-    * @param String array account which is 
-    */
+     * Checks if the provided account information is valid and can be used to create a new account
+     * Validates the account type, first name, last name, date of birth (DOB), and the initial balance.
+     * @param String array account which is
+     */
     private Account checkAccount(String [] account) {
         if (account.length < 5 || account.length > 6) {
             return null;
@@ -614,11 +658,12 @@ public class TransactionManagerController {
         return createNewAccount(accountType, profile, amount, campusCode, isLoyal);
     }
 
-    
+
+
     /**
-    * Loads account information from a text file.
-    * @param ActionEvent object "event" for a user inputted action
-    */
+     * Loads account information from a text file.
+     * @param ActionEvent object "event" for a user inputted action
+     */
     @FXML
     private void loadFile(ActionEvent event) throws IOException {
         FileChooser chooser = new FileChooser();
@@ -632,7 +677,13 @@ public class TransactionManagerController {
             printAllOutputs("Unable to open file\n");
             return;
         }
-        BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(sourceFile));
+        } catch (Exception e){
+            printAllOutputs("Loading file improperly\n");
+            return;
+        }
         String [] account;
         String line = reader.readLine();
         boolean foundInvalidAccount = false;
@@ -658,4 +709,6 @@ public class TransactionManagerController {
         reader.close();
     }
 
+
 }
+
